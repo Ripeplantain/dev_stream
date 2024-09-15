@@ -3,7 +3,8 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
-
+import { ClerkProvider } from '@clerk/nextjs'
+import Room from "./Room";
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
@@ -26,21 +27,25 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <head />
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased dark:text-white`}
-      >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
+    <ClerkProvider>
+      <html lang="en" suppressHydrationWarning>
+        <head />
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased dark:text-white`}
         >
-          {children}
-        </ThemeProvider>
-        <Toaster />
-      </body>
-    </html>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <Room>
+              {children}
+            </Room>
+          </ThemeProvider>
+          <Toaster />
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

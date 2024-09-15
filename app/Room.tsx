@@ -5,14 +5,21 @@ import {
   RoomProvider,
   ClientSideSuspense,
 } from "@liveblocks/react/suspense";
-import { CollaborativeEditor } from "../components/CollaborativeEditor";
 
-export default function App() {
+interface AppProps {
+  children: React.ReactNode;
+}
+
+export default function App({children}: AppProps) {
+
   return (
-    <LiveblocksProvider publicApiKey={process.env.NEXT_PUBLIC_LIVEBLOCKS_PUBLIC_KEY as string}>
+    <LiveblocksProvider 
+      publicApiKey={process.env.NEXT_PUBLIC_LIVEBLOCKS_PUBLIC_KEY as string}
+      throttle={30}
+      >
       <RoomProvider id="my-room">
         <ClientSideSuspense fallback={<div>Loading…</div>}>
-          <CollaborativeEditor />
+          {children}
         </ClientSideSuspense>
       </RoomProvider>
     </LiveblocksProvider>

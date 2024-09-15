@@ -8,20 +8,22 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
-import Room from "@/app/Room";
 import { Button } from "./ui/button";
 import { Play } from "lucide-react";
 import { useLanguageStore } from "@/store/language";
 import { compileCode } from "@/services/compile";
 import { useToast } from "@//hooks/use-toast";
 import { Loader } from "lucide-react";
-
+import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import { useOthers } from "@liveblocks/react/suspense";
+import { CollaborativeEditor } from "./CollaborativeEditor";
 const Editor = () => {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const selectedLanguage = useLanguageStore((state) => state.selectedLanguage);
   const sourceCode = useLanguageStore((state) => state.sourceCode);
   const [output, setOutput] = useState<string>("");
+  const others = useOthers();
 
   async function executeCode() {
     setIsLoading(true);
@@ -55,13 +57,32 @@ const Editor = () => {
   }
 
   return (
-    <div className="h-full dark:bg-slate-900 bg-slate-100 rounded-2xl shadow-2xl py-6 px-8">
+    <div
+      className="h-full dark:bg-slate-900 bg-slate-100 rounded-2xl shadow-2xl py-6 px-8"
+    >
       {/* Editor Header */}
       <div className="flex items-center justify-between pb-3">
         <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight first:mt-0">
           Dev Stream
         </h2>
+        {others.length > 0 && (
+          <div className="flex items-center space-x-2">
+            <span className="text-sm text-slate-600 dark:text-slate-300">
+              {others.length} {others.length > 1 ? "users" : "user"} online
+            </span>
+          </div>
+        )}
         <div className="flex items-center space-x-2">
+          <div>
+            <SignedOut>
+              <Button>
+                <SignInButton />
+              </Button>
+            </SignedOut>
+            <SignedIn>
+              <UserButton />
+            </SignedIn>
+          </div>
           <ModeToggleBtn />
           <div className="w-[230px]">
             <SelectLanguages />
@@ -78,7 +99,7 @@ const Editor = () => {
           className="w-full rounded-lg border md:min-w-[450px] dark:bg-slate-900"
         >
           <ResizablePanel defaultSize={50} minSize={35}>
-            <Room />
+            <CollaborativeEditor />
           </ResizablePanel>
           <ResizableHandle withHandle />
           <ResizablePanel defaultSize={50} minSize={35}>
